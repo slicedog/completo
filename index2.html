@@ -9,15 +9,12 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
         :root { 
-            --sd-mustard: #e52320; /* Tu Rojo */
-            --sd-bg: #2c3e50;      /* Tu Azul Marino */
+            --sd-mustard: #e52320; 
+            --sd-bg: #2c3e50;
         }
         body { font-family: 'Inter', sans-serif; background-color: var(--sd-bg); margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
         .italic-black { font-weight: 900; font-style: italic; text-transform: uppercase; }
-        
-        /* Sellos activos en rojo */
         .stamp-active { background: linear-gradient(135deg, var(--sd-mustard) 0%, #b91c1c 100%); color: white; border: none; }
-        
         #loader { position: fixed; inset: 0; background: var(--sd-bg); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; }
         .hidden { display: none !important; }
     </style>
@@ -25,7 +22,9 @@
 <body>
 
     <div id="loader">
-        <div class="animate-bounce text-white"><i data-lucide="hot-dog" size="48"></i></div>
+        <div class="animate-bounce text-white">
+            <i data-lucide="star" class="w-12 h-12"></i>
+        </div>
     </div>
 
     <div class="max-w-md mx-auto p-6">
@@ -36,14 +35,9 @@
         <main id="main-ui" class="hidden">
             <div class="bg-white rounded-[2.5rem] p-8 shadow-2xl border-b-8 border-neutral-200">
                 <p id="user-greeting" class="text-[10px] font-black text-neutral-400 mb-4 uppercase text-center"></p>
-                
                 <div id="stamps-grid" class="grid grid-cols-5 gap-3 mb-8"></div>
-
                 <div id="action-zone">
-                    <button id="main-button" class="w-full py-5 bg-[var(--sd-mustard)] text-white rounded-[1.8rem] italic-black shadow-lg uppercase text-lg transition-transform active:scale-95">
-                        Solicitar Sello
-                    </button>
-                    
+                    <button id="main-button" class="w-full py-5 bg-[var(--sd-mustard)] text-white rounded-[1.8rem] italic-black shadow-lg uppercase text-lg transition-transform active:scale-95">Solicitar Sello</button>
                     <div id="pin-display" class="hidden w-full py-6 bg-[var(--sd-mustard)] text-white rounded-[2rem] italic-black flex flex-col items-center shadow-lg">
                         <span class="text-[10px] opacity-70 mb-1">CÓDIGO ACTIVO</span>
                         <span id="pin-number" class="text-5xl tracking-widest mb-1">0000</span>
@@ -57,13 +51,10 @@
         <div id="register-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[500] flex items-center justify-center p-6 hidden">
             <div class="bg-white w-full max-w-sm rounded-[3rem] p-8 text-center border-t-8 border-[var(--sd-mustard)]">
                 <h2 class="italic-black text-2xl mb-2">Acceso al Club</h2>
-                <p class="text-[10px] text-neutral-400 font-bold uppercase mb-6">Si ya tienes cuenta, ingresa solo tu correo</p>
-                
-                <input type="email" id="reg-email" placeholder="Tu Correo (Obligatorio)" class="w-full p-4 mb-3 bg-neutral-100 rounded-2xl font-bold text-center outline-none border-2 border-transparent focus:border-[var(--sd-mustard)]">
-                <input type="text" id="reg-name" placeholder="Tu Nombre (Solo nuevos)" class="w-full p-4 mb-3 bg-neutral-100 rounded-2xl font-bold text-center outline-none border-2 border-transparent focus:border-[var(--sd-mustard)]">
-                <input type="tel" id="reg-wa" placeholder="WhatsApp (Solo nuevos)" class="w-full p-4 mb-6 bg-neutral-100 rounded-2xl font-bold text-center outline-none border-2 border-transparent focus:border-[var(--sd-mustard)]">
-                
-                <button id="btn-do-register" class="w-full py-5 bg-black text-white rounded-[1.8rem] italic-black uppercase transition-transform active:scale-95">Entrar / Unirme</button>
+                <input type="email" id="reg-email" placeholder="Tu Correo" class="w-full p-4 mb-3 bg-neutral-100 rounded-2xl font-bold text-center outline-none">
+                <input type="text" id="reg-name" placeholder="Tu Nombre" class="w-full p-4 mb-3 bg-neutral-100 rounded-2xl font-bold text-center outline-none">
+                <input type="tel" id="reg-wa" placeholder="WhatsApp" class="w-full p-4 mb-6 bg-neutral-100 rounded-2xl font-bold text-center outline-none">
+                <button id="btn-do-register" class="w-full py-5 bg-black text-white rounded-[1.8rem] italic-black uppercase">Entrar / Unirme</button>
             </div>
         </div>
     </div>
@@ -97,19 +88,25 @@
                 const active = i < (data.stamps || 0);
                 const slot = document.createElement('div');
                 slot.className = `aspect-square rounded-2xl flex items-center justify-center border-2 ${active ? 'stamp-active' : 'border-dashed border-neutral-300 bg-white/50'}`;
-                slot.innerHTML = active ? (i === 9 ? '<i data-lucide="gift"></i>' : '<i data-lucide="hot-dog"></i>') : (i === 9 ? '<i data-lucide="gift" class="text-neutral-300"></i>' : '');
+                
+                // Usamos 'star' para los sellos normales y 'gift' para el último
+                let iconName = active ? (i === 9 ? 'gift' : 'star') : (i === 9 ? 'gift' : '');
+                
+                // Agregamos la clase de color para el regalo inactivo si es necesario
+                let iconClass = (i === 9 && !active) ? 'text-neutral-300' : '';
+                
+                slot.innerHTML = iconName ? `<i data-lucide="${iconName}" class="${iconClass}"></i>` : '';
+                
                 grid.appendChild(slot);
             }
             lucide.createIcons();
 
             const btn = document.getElementById('main-button');
             const pinBox = document.getElementById('pin-display');
-
             if (data.active_pin) {
                 btn.classList.add('hidden');
                 pinBox.classList.remove('hidden');
                 document.getElementById('pin-number').innerText = data.active_pin;
-                
                 const timeLeft = Math.ceil((300000 - (Date.now() - data.pin_timestamp)) / 1000);
                 if (timeLeft <= 0) {
                     updateDoc(doc(db, "users", userEmail), { active_pin: deleteField(), pin_timestamp: deleteField() });
@@ -119,7 +116,6 @@
             } else {
                 pinBox.classList.add('hidden');
                 btn.classList.remove('hidden');
-                btn.disabled = false;
                 btn.innerText = (data.stamps >= 10) ? "CANJEAR HOT DOG GRATIS" : "SOLICITAR SELLO";
             }
         }
@@ -127,68 +123,30 @@
         document.getElementById('main-button').addEventListener('click', async () => {
             const btn = document.getElementById('main-button');
             btn.disabled = true;
-            btn.innerText = "GENERANDO...";
-
             try {
                 const pin = Math.floor(1000 + Math.random() * 9000);
-                const type = (btn.innerText.includes("HOT DOG")) ? "TABLERO" : "SELLO";
-                await updateDoc(doc(db, "users", userEmail), {
-                    active_pin: pin,
-                    pin_timestamp: Date.now(),
-                    pin_type: type
-                });
-            } catch (e) {
-                alert("Error de conexión");
-                btn.disabled = false;
-            }
+                await updateDoc(doc(db, "users", userEmail), { active_pin: pin, pin_timestamp: Date.now() });
+            } catch (e) { alert("Error"); btn.disabled = false; }
         });
 
         if (userEmail) {
-            onSnapshot(doc(db, "users", userEmail), (snap) => {
-                if (snap.exists()) updateUI(snap.data());
-            });
+            onSnapshot(doc(db, "users", userEmail), (snap) => { if (snap.exists()) updateUI(snap.data()); });
         } else {
             document.getElementById('loader').classList.add('hidden');
             document.getElementById('register-modal').classList.remove('hidden');
         }
 
         document.getElementById('btn-do-register').onclick = async () => {
-            const btn = document.getElementById('btn-do-register');
             const e = document.getElementById('reg-email').value.toLowerCase().trim();
             const n = document.getElementById('reg-name').value.trim();
             const w = document.getElementById('reg-wa').value.trim();
-
-            if(!e) return alert("El correo es obligatorio para entrar.");
-
-            btn.disabled = true;
-            btn.innerText = "VERIFICANDO...";
-
+            if(!e) return alert("Correo obligatorio");
             try {
-                const userRef = doc(db, "users", e);
-                const userSnap = await getDoc(userRef);
-
-                if (userSnap.exists()) {
-                    localStorage.setItem(`sd_user_${COMERCIO_ID}`, JSON.stringify(e));
-                    location.reload();
-                } else {
-                    if (!n || !w) {
-                        btn.disabled = false;
-                        btn.innerText = "ENTRAR / UNIRME";
-                        return alert("Como eres nuevo, por favor completa también tu Nombre y WhatsApp.");
-                    }
-                    await setDoc(userRef, { name: n, email: e, whatsapp: w, stamps: 1, lastUpdate: new Date() });
-                    localStorage.setItem(`sd_user_${COMERCIO_ID}`, JSON.stringify(e));
-                    location.reload();
-                }
-            } catch (error) {
-                console.error("Error en login:", error);
-                alert("Hubo un error de conexión, intenta nuevamente.");
-                btn.disabled = false;
-                btn.innerText = "ENTRAR / UNIRME";
-            }
+                await setDoc(doc(db, "users", e), { name: n, email: e, whatsapp: w, stamps: 1, lastUpdate: new Date() }, {merge: true});
+                localStorage.setItem(`sd_user_${COMERCIO_ID}`, JSON.stringify(e));
+                location.reload();
+            } catch (error) { alert("Error de conexión"); }
         };
-
-        lucide.createIcons();
     </script>
 </body>
 </html>
