@@ -46,6 +46,8 @@
                 </div>
             </div>
             <p class="text-[9px] text-center mt-8 font-black text-neutral-300 uppercase tracking-widest italic">Muestra tu código al cajero</p>
+            
+            <button id="btn-open-rules" class="text-[10px] text-neutral-400 font-black uppercase tracking-widest block mx-auto mt-4 underline decoration-[var(--sd-mustard)] underline-offset-4 hover:text-white transition-colors">Ver Reglas del Club</button>
         </main>
 
         <div id="register-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[500] flex items-center justify-center p-6 hidden">
@@ -57,6 +59,23 @@
                 <button id="btn-do-register" class="w-full py-5 bg-black text-white rounded-[1.8rem] italic-black uppercase">Entrar / Unirme</button>
             </div>
         </div>
+
+        <div id="rules-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[500] flex items-center justify-center p-6 hidden">
+            <div class="bg-white w-full max-w-sm rounded-[3rem] p-8 text-center border-t-8 border-[var(--sd-mustard)]">
+                <h2 class="italic-black text-2xl mb-2">Reglas del Club</h2>
+                <p class="text-[10px] text-neutral-400 font-bold uppercase mb-6">Términos y condiciones</p>
+                
+                <div class="text-left text-[11px] font-black text-neutral-600 space-y-4 mb-8 uppercase tracking-wide">
+                    <p class="flex items-start gap-2"><span class="text-[var(--sd-mustard)]">1.</span> Acumulas 1 sello por cada compra de Hot Dog.</p>
+                    <p class="flex items-start gap-2"><span class="text-[var(--sd-mustard)]">2.</span> Al completar 9 sellos, ¡el número 10 es gratis!</p>
+                    <p class="flex items-start gap-2"><span class="text-[var(--sd-mustard)]">3.</span> Debes mostrar el código en pantalla al cajero para validar.</p>
+                    <p class="flex items-start gap-2"><span class="text-[var(--sd-mustard)]">4.</span> Cada código generado expira automáticamente en 5 minutos.</p>
+                </div>
+                
+                <button id="btn-close-rules" class="w-full py-4 bg-black text-white rounded-[1.8rem] italic-black uppercase transition-transform active:scale-95">Entendido</button>
+            </div>
+        </div>
+
     </div>
 
     <script type="module">
@@ -89,14 +108,10 @@
                 const slot = document.createElement('div');
                 slot.className = `aspect-square rounded-2xl flex items-center justify-center border-2 ${active ? 'stamp-active' : 'border-dashed border-neutral-300 bg-white/50'}`;
                 
-                // Usamos 'star' para los sellos normales y 'gift' para el último
                 let iconName = active ? (i === 9 ? 'gift' : 'star') : (i === 9 ? 'gift' : '');
-                
-                // Agregamos la clase de color para el regalo inactivo si es necesario
                 let iconClass = (i === 9 && !active) ? 'text-neutral-300' : '';
                 
                 slot.innerHTML = iconName ? `<i data-lucide="${iconName}" class="${iconClass}"></i>` : '';
-                
                 grid.appendChild(slot);
             }
             lucide.createIcons();
@@ -147,6 +162,15 @@
                 location.reload();
             } catch (error) { alert("Error de conexión"); }
         };
+
+        // Lógica para abrir y cerrar el Modal de Reglas (Seguro y aislado)
+        document.getElementById('btn-open-rules').onclick = () => {
+            document.getElementById('rules-modal').classList.remove('hidden');
+        };
+        document.getElementById('btn-close-rules').onclick = () => {
+            document.getElementById('rules-modal').classList.add('hidden');
+        };
+
     </script>
 </body>
 </html>
