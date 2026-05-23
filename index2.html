@@ -108,10 +108,22 @@
                 const slot = document.createElement('div');
                 slot.className = `aspect-square rounded-2xl flex items-center justify-center border-2 ${active ? 'stamp-active' : 'border-dashed border-neutral-300 bg-white/50'}`;
                 
-                let iconName = active ? (i === 9 ? 'gift' : 'star') : (i === 9 ? 'gift' : '');
-                let iconClass = (i === 9 && !active) ? 'text-neutral-300' : '';
+                if (active) {
+                    // Si el casillero está activo, muestra una estrella o el regalo final
+                    if (i === 9) {
+                        slot.innerHTML = '<i data-lucide="gift"></i>';
+                    } else {
+                        slot.innerHTML = '<i data-lucide="star"></i>';
+                    }
+                } else {
+                    // Si el casillero está vacío, muestra el número correspondiente excepto el 10 que es un regalo
+                    if (i === 9) {
+                        slot.innerHTML = '<i data-lucide="gift" class="text-neutral-300"></i>';
+                    } else {
+                        slot.innerHTML = `<span class="text-neutral-300 font-black text-xs">${i + 1}</span>`;
+                    }
+                }
                 
-                slot.innerHTML = iconName ? `<i data-lucide="${iconName}" class="${iconClass}"></i>` : '';
                 grid.appendChild(slot);
             }
             lucide.createIcons();
@@ -163,7 +175,7 @@
             } catch (error) { alert("Error de conexión"); }
         };
 
-        // Lógica para abrir y cerrar el Modal de Reglas (Seguro y aislado)
+        // Lógica para abrir y cerrar el Modal de Reglas
         document.getElementById('btn-open-rules').onclick = () => {
             document.getElementById('rules-modal').classList.remove('hidden');
         };
