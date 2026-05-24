@@ -24,7 +24,7 @@
             try {
                 // NOTA: Debes generar tu VAPID KEY en Firebase Console > Cloud Messaging > Web configuration
                 const token = await getToken(messaging, { 
-                    vapidKey: 'TU_LLAVE_VAPID_AQUI' 
+                    vapidKey: 'BASurD1nyVm56OomVfLvxT6MnUCa_sxVzQ54mCAjvgvfFR3QUfPSfjV0KGiYsArYXdZHF9w732vChhyUEWjufxk' 
                 });
                 if (token) {
                     await updateDoc(doc(db, "users", email), { fcm_token: token });
