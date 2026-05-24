@@ -5,16 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Slice Dog Club - Hot Dogs</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide@0.378.0/dist/umd/lucide.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
         :root { 
-            --sd-mustard: #eb9a1f; /* Color Mostaza original */
-            --sd-bg: #fdf6ec;      /* Fondo un poco más claro para resaltar el rojo */
+            --sd-mustard: #e52320; 
+            --sd-bg: #2c3e50;
         }
         body { font-family: 'Inter', sans-serif; background-color: var(--sd-bg); margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
         .italic-black { font-weight: 900; font-style: italic; text-transform: uppercase; }
-        .stamp-active { background: linear-gradient(135deg, var(--sd-mustard) 0%, #c97e10 100%); color: white; border: none; }
+        .stamp-active { background: linear-gradient(135deg, var(--sd-mustard) 0%, #b91c1c 100%); color: white; border: none; }
         #loader { position: fixed; inset: 0; background: var(--sd-bg); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; }
         .hidden { display: none !important; }
     </style>
@@ -22,54 +22,66 @@
 <body>
 
     <div id="loader">
-        <div class="animate-bounce text-red-600"><i data-lucide="hot-dog" size="48"></i></div>
+        <div class="animate-bounce text-white">
+            <i data-lucide="star" class="w-12 h-12"></i>
+        </div>
     </div>
 
     <div class="max-w-md mx-auto p-6">
         <header class="py-8 text-center">
-            <h1 class="italic-black text-3xl">SLICE DOG <span class="text-red-600">CLUB</span></h1>
+            <h1 class="italic-black text-3xl text-white">SLICE DOG <span class="text-red-500">CLUB</span></h1>
         </header>
 
         <main id="main-ui" class="hidden">
             <div class="bg-white rounded-[2.5rem] p-8 shadow-2xl border-b-8 border-neutral-200">
                 <p id="user-greeting" class="text-[10px] font-black text-neutral-400 mb-4 uppercase text-center"></p>
-                
                 <div id="stamps-grid" class="grid grid-cols-5 gap-3 mb-8"></div>
-
                 <div id="action-zone">
-                    <button id="main-button" class="w-full py-5 bg-[var(--sd-mustard)] text-white rounded-[1.8rem] italic-black shadow-lg uppercase text-lg transition-transform active:scale-95">
-                        Solicitar Sello
-                    </button>
-                    
-                    <div id="pin-display" class="hidden w-full py-6 bg-red-600 text-white rounded-[2rem] italic-black flex flex-col items-center shadow-lg">
+                    <button id="main-button" class="w-full py-5 bg-[var(--sd-mustard)] text-white rounded-[1.8rem] italic-black shadow-lg uppercase text-lg transition-transform active:scale-95">Solicitar Sello</button>
+                    <div id="pin-display" class="hidden w-full py-6 bg-[var(--sd-mustard)] text-white rounded-[2rem] italic-black flex flex-col items-center shadow-lg">
                         <span class="text-[10px] opacity-70 mb-1">CÓDIGO ACTIVO</span>
                         <span id="pin-number" class="text-5xl tracking-widest mb-1">0000</span>
                         <span id="pin-timer" class="text-[10px] font-bold">CARGANDO...</span>
                     </div>
                 </div>
             </div>
-            <p class="text-[9px] text-center mt-8 font-black text-neutral-400 uppercase tracking-widest italic">Muestra tu código al cajero</p>
+            <p class="text-[9px] text-center mt-8 font-black text-neutral-300 uppercase tracking-widest italic">Muestra tu código al cajero</p>
+            
+            <button id="btn-open-rules" class="text-[10px] text-neutral-400 font-black uppercase tracking-widest block mx-auto mt-4 underline decoration-[var(--sd-mustard)] underline-offset-4 hover:text-white transition-colors">Ver Reglas del Club</button>
         </main>
 
         <div id="register-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[500] flex items-center justify-center p-6 hidden">
-            <div class="bg-white w-full max-w-sm rounded-[3rem] p-8 text-center border-t-8 border-red-500">
+            <div class="bg-white w-full max-w-sm rounded-[3rem] p-8 text-center border-t-8 border-[var(--sd-mustard)]">
                 <h2 class="italic-black text-2xl mb-2">Acceso al Club</h2>
-                <p class="text-[10px] text-neutral-400 font-bold uppercase mb-6">Si ya tienes cuenta, ingresa solo tu correo</p>
-                
-                <input type="email" id="reg-email" placeholder="Tu Correo (Obligatorio)" class="w-full p-4 mb-3 bg-neutral-100 rounded-2xl font-bold text-center outline-none border-2 border-transparent focus:border-red-500">
-                <input type="text" id="reg-name" placeholder="Tu Nombre (Solo nuevos)" class="w-full p-4 mb-3 bg-neutral-100 rounded-2xl font-bold text-center outline-none border-2 border-transparent focus:border-red-500">
-                <input type="tel" id="reg-wa" placeholder="WhatsApp (Solo nuevos)" class="w-full p-4 mb-6 bg-neutral-100 rounded-2xl font-bold text-center outline-none border-2 border-transparent focus:border-red-500">
-                
-                <button id="btn-do-register" class="w-full py-5 bg-black text-white rounded-[1.8rem] italic-black uppercase transition-transform active:scale-95">Entrar / Unirme</button>
+                <input type="email" id="reg-email" placeholder="Tu Correo" class="w-full p-4 mb-3 bg-neutral-100 rounded-2xl font-bold text-center outline-none">
+                <input type="text" id="reg-name" placeholder="Tu Nombre" class="w-full p-4 mb-3 bg-neutral-100 rounded-2xl font-bold text-center outline-none">
+                <input type="tel" id="reg-wa" placeholder="WhatsApp" class="w-full p-4 mb-6 bg-neutral-100 rounded-2xl font-bold text-center outline-none">
+                <button id="btn-do-register" class="w-full py-5 bg-black text-white rounded-[1.8rem] italic-black uppercase">Entrar / Unirme</button>
             </div>
         </div>
+
+        <div id="rules-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[500] flex items-center justify-center p-6 hidden">
+            <div class="bg-white w-full max-w-sm rounded-[3rem] p-8 text-center border-t-8 border-[var(--sd-mustard)]">
+                <h2 class="italic-black text-2xl mb-2">Reglas del Club</h2>
+                <p class="text-[10px] text-neutral-400 font-bold uppercase mb-6">Términos y condiciones</p>
+                
+                <div class="text-left text-[11px] font-black text-neutral-600 space-y-4 mb-8 uppercase tracking-wide">
+                    <p class="flex items-start gap-2"><span class="text-[var(--sd-mustard)]">1.</span> Acumulas 1 sello por cada compra de Hot Dog.</p>
+                    <p class="flex items-start gap-2"><span class="text-[var(--sd-mustard)]">2.</span> Al completar 9 sellos, ¡el número 10 es gratis!</p>
+                    <p class="flex items-start gap-2"><span class="text-[var(--sd-mustard)]">3.</span> Debes mostrar el código en pantalla al cajero para validar.</p>
+                    <p class="flex items-start gap-2"><span class="text-[var(--sd-mustard)]">4.</span> Cada código generado expira automáticamente en 5 minutos.</p>
+                </div>
+                
+                <button id="btn-close-rules" class="w-full py-4 bg-black text-white rounded-[1.8rem] italic-black uppercase transition-transform active:scale-95">Entendido</button>
+            </div>
+        </div>
+
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot, deleteField } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // Tu configuración de Firebase para Hot Dogs
         const firebaseConfig = {
             apiKey: "AIzaSyAjIQZNTArSvmCEXPKYDjhZsUo0EqT49xE",
             authDomain: "sdog-9a2f3.firebaseapp.com",
@@ -81,37 +93,47 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const COMERCIO_ID = 'slicedog_hotdogs'; // ID cambiado para no pisar el localStorage de las pizzas
+        const COMERCIO_ID = 'slicedog_hotdogs';
         let userEmail = JSON.parse(localStorage.getItem(`sd_user_${COMERCIO_ID}`));
 
-        // --- LÓGICA DE ACTUALIZACIÓN DE UI ---
         function updateUI(data) {
             document.getElementById('loader').classList.add('hidden');
             document.getElementById('main-ui').classList.remove('hidden');
-            // Saludo cambiado a COMPLETERO y emoji de Hot dog
             document.getElementById('user-greeting').innerText = `HOLA, ${data.name || 'COMPLETERO'} 🌭`;
 
-            // Dibujar sellos
             const grid = document.getElementById('stamps-grid');
             grid.innerHTML = '';
             for(let i=0; i<10; i++) {
                 const active = i < (data.stamps || 0);
                 const slot = document.createElement('div');
                 slot.className = `aspect-square rounded-2xl flex items-center justify-center border-2 ${active ? 'stamp-active' : 'border-dashed border-neutral-300 bg-white/50'}`;
-                // Íconos cambiados a hot-dog
-                slot.innerHTML = active ? (i === 9 ? '<i data-lucide="gift"></i>' : '<i data-lucide="hot-dog"></i>') : (i === 9 ? '<i data-lucide="gift" class="text-neutral-300"></i>' : '');
+                
+                if (active) {
+                    // Si el casillero está activo, muestra una estrella o el regalo final
+                    if (i === 9) {
+                        slot.innerHTML = '<i data-lucide="gift"></i>';
+                    } else {
+                        slot.innerHTML = '<i data-lucide="star"></i>';
+                    }
+                } else {
+                    // Si el casillero está vacío, muestra el número correspondiente excepto el 10 que es un regalo
+                    if (i === 9) {
+                        slot.innerHTML = '<i data-lucide="gift" class="text-neutral-300"></i>';
+                    } else {
+                        slot.innerHTML = `<span class="text-neutral-300 font-black text-xs">${i + 1}</span>`;
+                    }
+                }
+                
                 grid.appendChild(slot);
             }
             lucide.createIcons();
 
             const btn = document.getElementById('main-button');
             const pinBox = document.getElementById('pin-display');
-
             if (data.active_pin) {
                 btn.classList.add('hidden');
                 pinBox.classList.remove('hidden');
                 document.getElementById('pin-number').innerText = data.active_pin;
-                
                 const timeLeft = Math.ceil((300000 - (Date.now() - data.pin_timestamp)) / 1000);
                 if (timeLeft <= 0) {
                     updateDoc(doc(db, "users", userEmail), { active_pin: deleteField(), pin_timestamp: deleteField() });
@@ -121,82 +143,46 @@
             } else {
                 pinBox.classList.add('hidden');
                 btn.classList.remove('hidden');
-                btn.disabled = false;
-                // Texto de recompensa cambiado a HOT DOG
                 btn.innerText = (data.stamps >= 10) ? "CANJEAR HOT DOG GRATIS" : "SOLICITAR SELLO";
-                if(data.stamps >= 10) btn.classList.replace('bg-[var(--sd-mustard)]', 'bg-red-600');
             }
         }
 
-        // --- BOTÓN DE PIN ---
         document.getElementById('main-button').addEventListener('click', async () => {
             const btn = document.getElementById('main-button');
             btn.disabled = true;
-            btn.innerText = "GENERANDO...";
-
             try {
                 const pin = Math.floor(1000 + Math.random() * 9000);
-                // Validación adaptada para HOT DOG
-                const type = (btn.innerText.includes("HOT DOG")) ? "TABLERO" : "SELLO";
-                await updateDoc(doc(db, "users", userEmail), {
-                    active_pin: pin,
-                    pin_timestamp: Date.now(),
-                    pin_type: type
-                });
-            } catch (e) {
-                alert("Error de conexión");
-                btn.disabled = false;
-            }
+                await updateDoc(doc(db, "users", userEmail), { active_pin: pin, pin_timestamp: Date.now() });
+            } catch (e) { alert("Error"); btn.disabled = false; }
         });
 
-        // --- INICIO APP ---
         if (userEmail) {
-            onSnapshot(doc(db, "users", userEmail), (snap) => {
-                if (snap.exists()) updateUI(snap.data());
-            });
+            onSnapshot(doc(db, "users", userEmail), (snap) => { if (snap.exists()) updateUI(snap.data()); });
         } else {
             document.getElementById('loader').classList.add('hidden');
             document.getElementById('register-modal').classList.remove('hidden');
         }
 
-        // --- LÓGICA BLINDADA DE LOGIN / REGISTRO ---
         document.getElementById('btn-do-register').onclick = async () => {
-            const btn = document.getElementById('btn-do-register');
             const e = document.getElementById('reg-email').value.toLowerCase().trim();
             const n = document.getElementById('reg-name').value.trim();
             const w = document.getElementById('reg-wa').value.trim();
-
-            if(!e) return alert("El correo es obligatorio para entrar.");
-
-            btn.disabled = true;
-            btn.innerText = "VERIFICANDO...";
-
+            if(!e) return alert("Correo obligatorio");
             try {
-                const userRef = doc(db, "users", e);
-                const userSnap = await getDoc(userRef);
-
-                if (userSnap.exists()) {
-                    localStorage.setItem(`sd_user_${COMERCIO_ID}`, JSON.stringify(e));
-                    location.reload();
-                } else {
-                    if (!n || !w) {
-                        btn.disabled = false;
-                        btn.innerText = "ENTRAR / UNIRME";
-                        return alert("Como eres nuevo, por favor completa también tu Nombre y WhatsApp.");
-                    }
-                    await setDoc(userRef, { name: n, email: e, whatsapp: w, stamps: 1, lastUpdate: new Date() });
-                    localStorage.setItem(`sd_user_${COMERCIO_ID}`, JSON.stringify(e));
-                    location.reload();
-                }
-            } catch (error) {
-                console.error("Error en login:", error);
-                alert("Hubo un error de conexión, intenta nuevamente.");
-                btn.disabled = false;
-                btn.innerText = "ENTRAR / UNIRME";
-            }
+                await setDoc(doc(db, "users", e), { name: n, email: e, whatsapp: w, stamps: 1, lastUpdate: new Date() }, {merge: true});
+                localStorage.setItem(`sd_user_${COMERCIO_ID}`, JSON.stringify(e));
+                location.reload();
+            } catch (error) { alert("Error de conexión"); }
         };
 
-        lucide.createIcons();
+        // Lógica para abrir y cerrar el Modal de Reglas
+        document.getElementById('btn-open-rules').onclick = () => {
+            document.getElementById('rules-modal').classList.remove('hidden');
+        };
+        document.getElementById('btn-close-rules').onclick = () => {
+            document.getElementById('rules-modal').classList.add('hidden');
+        };
+
     </script>
 </body>
 </html>
