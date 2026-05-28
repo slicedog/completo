@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Slice Dog Club - Hot Dogs</title>
+    <title>Slice Dog Club - Hot Dogs & Pizzas</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@0.378.0/dist/umd/lucide.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
         :root { 
-            --sd-mustard: #e52320; 
+            --sd-mustard: #e52320; /* Rojo original */
+            --sd-orange: #e57c1e;  /* Naranja para el premio */
             --sd-bg: #2c3e50;
         }
         body { font-family: 'Inter', sans-serif; background-color: var(--sd-bg); margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -23,7 +24,7 @@
 
     <div id="loader">
         <div class="animate-bounce text-white">
-            <i data-lucide="star" class="w-12 h-12"></i>
+            <i data-lucide="pizza" class="w-12 h-12"></i>
         </div>
     </div>
 
@@ -34,11 +35,14 @@
 
         <main id="main-ui" class="hidden">
             <div class="bg-white rounded-[2.5rem] p-8 shadow-2xl border-b-8 border-neutral-200">
-                <p id="user-greeting" class="text-[10px] font-black text-neutral-400 mb-4 uppercase text-center"></p>
+                
+                <p id="user-greeting" class="text-[10px] font-black text-neutral-400 mb-4 uppercase text-center tracking-wide"></p>
+                
                 <div id="stamps-grid" class="grid grid-cols-5 gap-3 mb-8"></div>
                 <div id="action-zone">
-                    <button id="main-button" class="w-full py-5 bg-[var(--sd-mustard)] text-white rounded-[1.8rem] italic-black shadow-lg uppercase text-lg transition-transform active:scale-95">Solicitar Sello</button>
-                    <div id="pin-display" class="hidden w-full py-6 bg-[var(--sd-mustard)] text-white rounded-[2rem] italic-black flex flex-col items-center shadow-lg">
+                    <button id="main-button" class="w-full py-5 text-white rounded-[1.8rem] italic-black shadow-lg uppercase text-lg transition-transform active:scale-95"></button>
+                    
+                    <div id="pin-display" class="hidden w-full py-6 text-white rounded-[2rem] italic-black flex flex-col items-center shadow-lg transition-colors">
                         <span class="text-[10px] opacity-70 mb-1">CÓDIGO ACTIVO</span>
                         <span id="pin-number" class="text-5xl tracking-widest mb-1">0000</span>
                         <span id="pin-timer" class="text-[10px] font-bold">CARGANDO...</span>
@@ -66,7 +70,7 @@
                 <p class="text-[10px] text-neutral-400 font-bold uppercase mb-6">Términos y condiciones</p>
                 
                 <div class="text-left text-[11px] font-black text-neutral-600 space-y-4 mb-8 uppercase tracking-wide">
-                    <p class="flex items-start gap-2"><span class="text-[var(--sd-mustard)]">1.</span> Acumulas 1 sello por cada compra de Hot Dog.</p>
+                    <p class="flex items-start gap-2"><span class="text-[var(--sd-mustard)]">1.</span> Acumulas 1 sello por cada compra.</p>
                     <p class="flex items-start gap-2"><span class="text-[var(--sd-mustard)]">2.</span> Al completar 9 sellos, ¡el número 10 es gratis!</p>
                     <p class="flex items-start gap-2"><span class="text-[var(--sd-mustard)]">3.</span> Debes mostrar el código en pantalla al cajero para validar.</p>
                     <p class="flex items-start gap-2"><span class="text-[var(--sd-mustard)]">4.</span> Cada código generado expira automáticamente en 5 minutos.</p>
@@ -80,7 +84,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot, deleteField } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, updateDoc, onSnapshot, deleteField } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAjIQZNTArSvmCEXPKYDjhZsUo0EqT49xE",
@@ -99,40 +103,59 @@
         function updateUI(data) {
             document.getElementById('loader').classList.add('hidden');
             document.getElementById('main-ui').classList.remove('hidden');
-            document.getElementById('user-greeting').innerText = `HOLA, ${data.name || 'COMPLETERO'} 🌭`;
 
+            const currentStamps = data.stamps || 0;
+            const isCompleted = currentStamps >= 10;
+            const missingStamps = 10 - currentStamps;
+
+            // 1. Textos dinámicos en la cabecera (Faltan X sellos o Premio Desbloqueado)
+            const greetingElement = document.getElementById('user-greeting');
+            if (isCompleted) {
+                greetingElement.innerHTML = `HOLA, ${data.name || 'CLIENTE'} 🍕<br><span class="text-2xl italic-black text-black block mt-1">¡PREMIO DESBLOQUEADO!</span>`;
+            } else {
+                greetingElement.innerHTML = `HOLA, ${data.name || 'CLIENTE'} 🍕<br><span class="text-2xl italic-black text-black block mt-1">FALTAN <span style="color: var(--sd-orange)">${missingStamps}</span> SELLOS</span>`;
+            }
+
+            // 2. Renderizar el Grid de 10 posiciones
             const grid = document.getElementById('stamps-grid');
             grid.innerHTML = '';
-            for(let i=0; i<10; i++) {
-                const active = i < (data.stamps || 0);
+            for(let i = 0; i < 10; i++) {
+                const active = i < currentStamps;
                 const slot = document.createElement('div');
-                slot.className = `aspect-square rounded-2xl flex items-center justify-center border-2 ${active ? 'stamp-active' : 'border-dashed border-neutral-300 bg-white/50'}`;
                 
                 if (active) {
-                    // Si el casillero está activo, muestra una estrella o el regalo final
+                    // Si llegó a 10, el fondo es naranja. Si no, usa el degradado rojo normal.
+                    const bgClass = isCompleted ? 'bg-[#e57c1e]' : 'stamp-active';
+                    slot.className = `aspect-square rounded-2xl flex items-center justify-center border-none text-white shadow-sm transition-colors ${bgClass}`;
+                    
                     if (i === 9) {
                         slot.innerHTML = '<i data-lucide="gift"></i>';
                     } else {
-                        slot.innerHTML = '<i data-lucide="star"></i>';
+                        slot.innerHTML = '<i data-lucide="pizza"></i>';
                     }
                 } else {
-                    // Si el casillero está vacío, muestra el número correspondiente excepto el 10 que es un regalo
+                    slot.className = `aspect-square rounded-2xl flex items-center justify-center border-2 border-dashed border-neutral-300 bg-white/50`;
                     if (i === 9) {
                         slot.innerHTML = '<i data-lucide="gift" class="text-neutral-300"></i>';
                     } else {
                         slot.innerHTML = `<span class="text-neutral-300 font-black text-xs">${i + 1}</span>`;
                     }
                 }
-                
                 grid.appendChild(slot);
             }
             lucide.createIcons();
 
+            // 3. Control del Botón y el PIN
             const btn = document.getElementById('main-button');
             const pinBox = document.getElementById('pin-display');
+            
             if (data.active_pin) {
                 btn.classList.add('hidden');
                 pinBox.classList.remove('hidden');
+                
+                // Color del cuadro del PIN según el estado
+                pinBox.style.backgroundColor = isCompleted ? "var(--sd-orange)" : "var(--sd-mustard)";
+                
                 document.getElementById('pin-number').innerText = data.active_pin;
                 const timeLeft = Math.ceil((300000 - (Date.now() - data.pin_timestamp)) / 1000);
                 if (timeLeft <= 0) {
@@ -143,17 +166,30 @@
             } else {
                 pinBox.classList.add('hidden');
                 btn.classList.remove('hidden');
-                btn.innerText = (data.stamps >= 10) ? "CANJEAR HOT DOG GRATIS" : "SOLICITAR SELLO";
+                
+                // Color y Texto del botón principal según el estado
+                if (isCompleted) {
+                    btn.innerText = "CANJEAR PIZZA GRATIS";
+                    btn.style.backgroundColor = "var(--sd-orange)";
+                } else {
+                    btn.innerText = "SOLICITAR SELLO";
+                    btn.style.backgroundColor = "var(--sd-mustard)";
+                }
+                btn.disabled = false; // Aseguramos que se habilite siempre
             }
         }
 
+        // Evento principal para pedir PIN
         document.getElementById('main-button').addEventListener('click', async () => {
             const btn = document.getElementById('main-button');
             btn.disabled = true;
             try {
                 const pin = Math.floor(1000 + Math.random() * 9000);
                 await updateDoc(doc(db, "users", userEmail), { active_pin: pin, pin_timestamp: Date.now() });
-            } catch (e) { alert("Error"); btn.disabled = false; }
+            } catch (e) { 
+                alert("Error al solicitar el código"); 
+                btn.disabled = false; 
+            }
         });
 
         if (userEmail) {
@@ -175,13 +211,9 @@
             } catch (error) { alert("Error de conexión"); }
         };
 
-        // Lógica para abrir y cerrar el Modal de Reglas
-        document.getElementById('btn-open-rules').onclick = () => {
-            document.getElementById('rules-modal').classList.remove('hidden');
-        };
-        document.getElementById('btn-close-rules').onclick = () => {
-            document.getElementById('rules-modal').classList.add('hidden');
-        };
+        // Modales
+        document.getElementById('btn-open-rules').onclick = () => { document.getElementById('rules-modal').classList.remove('hidden'); };
+        document.getElementById('btn-close-rules').onclick = () => { document.getElementById('rules-modal').classList.add('hidden'); };
 
     </script>
 </body>
