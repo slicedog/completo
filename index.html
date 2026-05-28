@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Slice Dog Club - Hot Dogs & Pizzas</title>
+    <title>Slice Dog Club</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@0.378.0/dist/umd/lucide.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
         :root { 
             --sd-mustard: #e52320; /* Rojo original */
-            --sd-orange: #e57c1e;  /* Naranja para el premio */
             --sd-bg: #2c3e50;
         }
         body { font-family: 'Inter', sans-serif; background-color: var(--sd-bg); margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -108,15 +107,15 @@
             const isCompleted = currentStamps >= 10;
             const missingStamps = 10 - currentStamps;
 
-            // 1. Textos dinámicos en la cabecera (Faltan X sellos o Premio Desbloqueado)
+            // 1. Textos dinámicos en la cabecera (Sin emojis de pizza)
             const greetingElement = document.getElementById('user-greeting');
             if (isCompleted) {
-                greetingElement.innerHTML = `HOLA, ${data.name || 'CLIENTE'} 🍕<br><span class="text-2xl italic-black text-black block mt-1">¡PREMIO DESBLOQUEADO!</span>`;
+                greetingElement.innerHTML = `HOLA, ${data.name || 'CLIENTE'}<br><span class="text-2xl italic-black text-black block mt-1">¡PREMIO DESBLOQUEADO!</span>`;
             } else {
-                greetingElement.innerHTML = `HOLA, ${data.name || 'CLIENTE'} 🍕<br><span class="text-2xl italic-black text-black block mt-1">FALTAN <span style="color: var(--sd-orange)">${missingStamps}</span> SELLOS</span>`;
+                greetingElement.innerHTML = `HOLA, ${data.name || 'CLIENTE'}<br><span class="text-2xl italic-black text-black block mt-1">FALTAN <span style="color: var(--sd-mustard)">${missingStamps}</span> SELLOS</span>`;
             }
 
-            // 2. Renderizar el Grid de 10 posiciones
+            // 2. Renderizar el Grid de 10 posiciones (Cambiado a Estrella)
             const grid = document.getElementById('stamps-grid');
             grid.innerHTML = '';
             for(let i = 0; i < 10; i++) {
@@ -124,14 +123,13 @@
                 const slot = document.createElement('div');
                 
                 if (active) {
-                    // Si llegó a 10, el fondo es naranja. Si no, usa el degradado rojo normal.
-                    const bgClass = isCompleted ? 'bg-[#e57c1e]' : 'stamp-active';
-                    slot.className = `aspect-square rounded-2xl flex items-center justify-center border-none text-white shadow-sm transition-colors ${bgClass}`;
+                    // Mantiene el color rojo degradado original siempre
+                    slot.className = `aspect-square rounded-2xl flex items-center justify-center border-none text-white shadow-sm transition-colors stamp-active`;
                     
                     if (i === 9) {
                         slot.innerHTML = '<i data-lucide="gift"></i>';
                     } else {
-                        slot.innerHTML = '<i data-lucide="pizza"></i>';
+                        slot.innerHTML = '<i data-lucide="star"></i>';
                     }
                 } else {
                     slot.className = `aspect-square rounded-2xl flex items-center justify-center border-2 border-dashed border-neutral-300 bg-white/50`;
@@ -145,7 +143,7 @@
             }
             lucide.createIcons();
 
-            // 3. Control del Botón y el PIN
+            // 3. Control del Botón y el PIN (Color Rojo Consistente)
             const btn = document.getElementById('main-button');
             const pinBox = document.getElementById('pin-display');
             
@@ -153,8 +151,8 @@
                 btn.classList.add('hidden');
                 pinBox.classList.remove('hidden');
                 
-                // Color del cuadro del PIN según el estado
-                pinBox.style.backgroundColor = isCompleted ? "var(--sd-orange)" : "var(--sd-mustard)";
+                // Fondo siempre rojo
+                pinBox.style.backgroundColor = "var(--sd-mustard)";
                 
                 document.getElementById('pin-number').innerText = data.active_pin;
                 const timeLeft = Math.ceil((300000 - (Date.now() - data.pin_timestamp)) / 1000);
@@ -167,15 +165,14 @@
                 pinBox.classList.add('hidden');
                 btn.classList.remove('hidden');
                 
-                // Color y Texto del botón principal según el estado
+                // Color y Texto adaptado a "PREMIO" genérico
+                btn.style.backgroundColor = "var(--sd-mustard)";
                 if (isCompleted) {
-                    btn.innerText = "CANJEAR PIZZA GRATIS";
-                    btn.style.backgroundColor = "var(--sd-orange)";
+                    btn.innerText = "CANJEAR PREMIO GRATIS";
                 } else {
                     btn.innerText = "SOLICITAR SELLO";
-                    btn.style.backgroundColor = "var(--sd-mustard)";
                 }
-                btn.disabled = false; // Aseguramos que se habilite siempre
+                btn.disabled = false;
             }
         }
 
